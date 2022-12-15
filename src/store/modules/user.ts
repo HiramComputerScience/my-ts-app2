@@ -1,55 +1,66 @@
 import User from "@/models/user/User";
-
+import store from "@/store";
 import {
-  ActionContext,
-  ActionTree,
-  GetterTree,
-  ModuleTree,
-  StoreOptions,
-} from "vuex";
+    Action,
+    getModule,
+    Module,
+    Mutation,
+    VuexModule,
+  } from "vuex-module-decorators";
+import { LoginRequest, LoginResponse, UserDetailsRequest, UserDetailsResponse } from "@/models";
+import userService from "@/services/user.service";
 
-import { LoginRequest, LoginResponse } from "@/models";
+@Module({ store, dynamic: true, namespaced: true, name: "user" })
+class UserStore extends VuexModule {
+  // eslint-disable-next-line
+    private user: User | undefined = undefined;
+    // eslint-disable-next-line
+    private loaded: boolean = false;
 
-export interface UserState {
-  user: User | null;
-}
-
-type Context = ActionContext<UserState, UserState>;
-
-const UserStore:
-  | StoreOptions<UserState>
-  | GetterTree<string, User | User[]>
-  | Record<string, boolean | string>
-  | ActionTree<Context, Promise<void>>
-  | ModuleTree<UserState> = {
-  namespaced: true,
-  name: "user",
-  state: {
-    user: null as User | null,
-  },
-  getters: {
-    getUser(state: UserState): User | null {
-      return state.user;
-    },
-  },
-  mutations: {
-    SET_USER(state: UserState, user: User): void {
-      state.user = user;
-    },
-    setUserFromLogin(loginRequest: LoginRequest, loginResponse: LoginResponse): void {
-        User user = new User(loginResponse.userDetails.firstName, loginResponse.userDetails.lastName, loginResponse.userDetails.email, loginRequest.password, loginResponse.userDetails.userId);
-        
+    get getUser() {
+        return this.user;
     }
 
-    CLEAR_USER(state: UserState): void {
-      state.user = null;
-    },
-  },
-  actions: {
-    clearUser(context: Context): void {
-      context.commit("CLEAR_USER");
-    },
-  }
+    get getLoaded() {
+        return this.loaded;
+    }
+
+    @Action({commit: "SET_USER"})
+    public setUserFromLogin(loginRequest: LoginRequest, loginResponse: LoginResponse): User {
+        this.user = new User(loginResponse.userDetails.firstName, loginResponse.userDetails.lastName, loginResponse.userDetails.email, loginRequest.password, loginResponse.userDetails.userId);
+    return this.user;
+    }
+
+    @Action
+    public async setNewUser(userDetailsRequest: UserDetailsRequest): Promise<User> {
+        const response = await userService.postUser(userDetailsRequest)
+        .then(r => r.data).catch(
+            (error) => {
+              const err = error.response.request.status +
+              " - " +
+              error.response.request.statusText;
+              this.context.commit(
+                "SET_USER_FAILED",
+                err
+              );
+              return Promise.reject(err);
+            }
+          );
+          this.user = new User(userDetailsRequest.firstName, userDetailsRequest.lastName, userDetailsRequest.email, userDetailsRequest.password, response.userId);
+        return this.user;
+    }
+
+    @Mutation
+    public SET_USER(user:User) {
+        this.user = user;
+        this.loaded = true;
+    }
+
+    @Mutation
+    public SET_NEW_USER(user:User){
+        this.user = user;
+        this.loaded = true;
+    }
 }
 
 export default UserStore;
