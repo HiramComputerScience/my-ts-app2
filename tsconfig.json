@@ -4,17 +4,21 @@
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
+    "importHelpers": true,
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+    "noEmitHelpers": false,
     "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
     "useDefineForClassFields": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types", "./node_modules/vuetify/types"],
     "types": [
-      "webpack-env"
+      "webpack-env","vuetify"
     ],
     "paths": {
       "@/*": [

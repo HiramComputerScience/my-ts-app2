@@ -9,7 +9,7 @@ import {
 Vue.use(VueRouter);
 
 const originalPush: any = Router.prototype.push;
-Router.prototype.push = function push(location) {
+Router.prototype.push = function push(location:string) {
   return originalPush.call(this, location).catch();
 };
 const routes: RouteConfig[] = [

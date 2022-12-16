@@ -1,58 +1,59 @@
 <template>
-    <v-container fluid>
-      <v-card max-width="800px">
+    <v-container >
         <v-toolbar dark color="primary">
           <v-toolbar-title>
             Welcome New User
           </v-toolbar-title>
         </v-toolbar>
-        <v-flex xs12>
-            <v-form ref="form">
-            <v-text-field
+      <v-form>
+        <v-row>
+          <v-col>
+              <v-text-field
                   v-model="firstName"
-                  @keydown.enter.prevent
                   label="Enter First Name"
                   prepend-icon="mdi-account-question"
+                  id="firstname-new"
                 />
-            </v-form>
-            <v-form ref="form">
+              </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
                 <v-text-field
                   v-model="lastName"
-                  @keydown.enter.prevent
                   label="Enter Last Name"
                   prepend-icon="mdi-account-question-outline"
-                />
-              </v-form>
-              <v-form ref="form">
+                  id="lastname-new"
+                ></v-text-field>
+              </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
                 <v-text-field
                   v-model="email"
-                  @keydown.enter.prevent
                   label="Enter Email (it will be your Username)"
                   prepend-icon="mdi-email"
-                />
-              </v-form>
-              <v-form ref="form">
+                  id="email-new"
+                ></v-text-field>
+              </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
                 <v-text-field
                   v-model="password"
-                  @keydown.enter.prevent
                   label="Enter password"
                   prepend-icon="mdi-archive-lock"
-                />
-              </v-form>
-            
-        </v-flex>
-        <v-flex xs12>
-          <v-list-item>
-            <v-list-item-content>
+                  id="password-new"
+                ></v-text-field>
+              </v-col>
+              </v-row>
+
               <v-row>
                 <v-col>
                   <v-btn
-                    :disabled="!isValidButton"
                     color="primary"
                     right
-                    @click="createNewUser"
-                    >Create new User!</v-btn
-                  >
+                    @click="showAll"
+                    >Create new User!</v-btn>
                 </v-col>
                 <v-col>
                   <v-btn
@@ -64,48 +65,48 @@
                   >
                 </v-col>
               </v-row>
-            </v-list-item-content>
-          </v-list-item>
-        </v-flex>
-    </v-card>
+      </v-form>
 </v-container>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
+import Vue from "vue"
 import Vuetify, { VSnackbar } from "vuetify/lib";
 import router from '@/router';
 import { namespace } from "vuex-class";
-import {Component, Prop} from 'vue-property-decorator';
-import { UserDetailsRequest, UserDetailsResponse } from "@/models";
+import {Component} from 'vue-property-decorator';
+import UserDetailsRequest from "@/models";
+import UserDetailsResponse from "@/models";
 const user  = namespace("user");
 Vue.use(Vuetify, {
   components: { VSnackbar },
 });
 
-@Component
 export default class NewUser extends Vue {
-      // eslint-disable-next-line 
-    private email: string = "";
-        // eslint-disable-next-line 
-    private password:string = "";
-        // eslint-disable-next-line 
-    private firstName:string = "";
-        // eslint-disable-next-line 
-    private lastName:string = "";
+    private email: string = "a";
+    private password:string = "b";
+    private firstName:string = "c";
+    private lastName:string = "d";
     private userDetailsResponse: UserDetailsResponse | undefined = undefined;
+
 
     @user.Action
     public setNewUser!: (userDetailsRequest: UserDetailsRequest) => Promise<any>;
 
     public back2Login() {
-        this.$router.push({ name: "loginuser" });
+        router.push({ name: "loginuser" });
     }
 
   get isValidButton(): boolean {
-    return this.email != "" && this.password != "" && this.firstName != "" && this.lastName != "";
+    let notBLank = (this.email != "" && this.password != "" && this.firstName != "" && this.lastName != "");
+    console.log("notBLank is " + notBLank);
+    return notBLank;
   }
   
+  public showAll() {
+    console.log("firstname, lastname: " + this.firstName + ", " + this.lastName);
+  }
+
   public async createNewUser(): Promise<void> {
     const userDetailsRequest = new UserDetailsRequest(this.firstName, this.lastName, this.email, this.password);
 

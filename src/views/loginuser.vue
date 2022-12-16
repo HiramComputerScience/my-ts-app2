@@ -37,7 +37,7 @@
                     :disabled="!isValidButton"
                     color="primary"
                     right
-                    @click="login"
+                    @click="showAll"
                     id="login-button"
                     >Add Contact Info</v-btn
                   >
@@ -62,8 +62,10 @@
 
 <script lang="ts">
 import Vue from "vue";
+import router from "@/router";
 import Vuetify, { VSnackbar } from "vuetify/lib";
-import {LoginRequest, LoginResponse} from "@/models";
+import LoginRequest  from "@/models"
+import LoginResponse from "@/models";
 import { namespace } from "vuex-class";
 const login  = namespace("login");
 Vue.use(Vuetify, {
@@ -71,23 +73,26 @@ Vue.use(Vuetify, {
 });
 
 export default class LoginUser extends Vue {
-  // eslint-disable-next-line 
-    private isPasswordCorrect: boolean = false;
-    // eslint-disable-next-line 
-    public email: string = "";
-    // eslint-disable-next-line 
-    public password: string = "";
-    private loginResponse: LoginResponse | undefined = undefined;
+
+    isPasswordCorrect: boolean = false;
+    email: string = "";
+    password: string = "";
+    loginResponse: LoginResponse | undefined = undefined;
 
     @login.Action
     public requestLogin!: (loginRequest:LoginRequest) => Promise<any>;
 
     public back2newUser() {
-        this.$router.push({ name: "newuser" });
+        router.push({ name: "newuser" });
     }
 
   get isValidButton(): boolean {
-    return this.email != "" && this.password != "";
+    return true;
+    //return this.email != "" && this.password != "";
+  }
+
+  public showAll() {
+    console.log("login and pword: " + this.login + ", " + this.password);
   }
   
   public async login(): Promise<void> {

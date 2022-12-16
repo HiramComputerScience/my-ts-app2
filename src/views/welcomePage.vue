@@ -5,11 +5,11 @@
     <template>
       <div>
         To use the app, you'll need to
-        <router-link to="loginForm">
+        <router-link to="loginuser">
           Login
         </router-link>
         or
-        <router-link to="newUser">
+        <router-link to="newuser">
           Register
         </router-link>
       </div>
